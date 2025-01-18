@@ -3,19 +3,68 @@
 @tailwind utilities;
 
 :root {
-  --background: #ffffff;
+  --background: #fafafa;
   --foreground: #171717;
 }
 
-@media (prefers-color-scheme: dark) {
+/* @media (prefers-color-scheme: dark) {
   :root {
     --background: #0a0a0a;
     --foreground: #ededed;
   }
-}
+} */
 
 body {
   color: var(--foreground);
   background: var(--background);
   font-family: Arial, Helvetica, sans-serif;
+}
+
+.transition_button {
+  @apply relative text-black rounded-full z-10 duration-700 inline-flex;
+}
+
+.transition_button::before {
+  content: '';
+  @apply absolute w-0 h-full opacity-0 bg-gradient-to-br from-brand to-green-400 top-0 -left-4 rounded-full -z-10 transition-all duration-500;
+  transition: width 0.6s cubic-bezier(0.4, 0, 0.2, 1), opacity 0.6s ease-in-out;
+}
+
+.transition_button:hover {
+  @apply text-white;
+}
+
+.transition_button:hover::before {
+  @apply opacity-100;
+  width: calc(100% + 2rem);
+}
+
+.heroImg {
+  border-bottom-left-radius: 100px;
+  border-top-right-radius: 100px;
+  width: 400px;
+  height: 430px;
+}
+
+.button {
+  @apply bg-gradient-to-br from-brand to-green-400 rounded-full text-white hover:shadow-md transition-all;
+}
+
+.detect_button {
+  @apply relative text-black rounded-full z-10 duration-700 inline-flex;
+}
+
+.detect_button::before {
+  content: '';
+  @apply absolute w-full h-full opacity-0 bg-gradient-to-br from-brand to-green-400 top-0 -left-4 rounded-full -z-10 transition-all duration-500;
+  transition: width 0.6s cubic-bezier(0.4, 0, 0.2, 1), opacity 0.6s ease-in-out;
+}
+
+.detect_button:hover {
+  @apply text-white;
+}
+
+.detect_button:hover::before {
+  @apply opacity-100;
+  width: calc(100% + 2rem);
 }
