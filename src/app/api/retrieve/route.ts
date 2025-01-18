@@ -5,7 +5,7 @@ import { NextApiRequest, NextApiResponse } from 'next';
 const MONGODB_URI = process.env.MONGO_URI;
 const mongoClient = new MongoClient(MONGODB_URI || '');
 
-export async function POST(req: Request, res: Response) {
+export async function POST(req: Request) {
   try {
     const { query } = (await req.json()) as { query: string };
     await mongoClient.connect();
