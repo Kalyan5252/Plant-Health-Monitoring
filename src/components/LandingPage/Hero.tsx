@@ -35,7 +35,7 @@ const Hero = () => {
             </p>
           </div>
           <Link href="/detect">
-            <button className="w-fit flex items-center gap-2 font-bold p-4 bg-brand rounded-full text-white">
+            <button className="w-fit flex items-center gap-2 font-bold px-4 py-3 bg-brand rounded-full text-white">
               DETECT
               <FaSearch size={20} />
             </button>
