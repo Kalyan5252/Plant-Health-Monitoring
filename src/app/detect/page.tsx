@@ -61,7 +61,8 @@ export default function Page() {
 
       const res = await fetch(
         // 'http://0.0.0.0:8000/predict/plant_classifier',
-        'http://134.209.149.188:8000/predict/plant_classifier',
+        // 'http://134.209.149.188:8000/predict/plant_classifier',
+        'https://184f0bd997ea.ngrok-free.app/predict/plant_classifier',
         {
           method: 'POST',
           body: formData,
