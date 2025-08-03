@@ -6,8 +6,7 @@ import { FaSearch } from 'react-icons/fa';
 import Image from 'next/image';
 
 import { gsap } from 'gsap';
-import { useGSAP } from '@gsap/react';
-import { Flip } from 'gsap/Flip';
+
 import { MotionPathPlugin } from 'gsap/MotionPathPlugin';
 
 const Hero = () => {
