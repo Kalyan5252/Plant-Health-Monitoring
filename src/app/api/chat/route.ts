@@ -21,14 +21,6 @@ export async function POST(req: Request) {
       throw new Error('No messages provided');
     }
 
-    const lastMessage = body.messages[body.messages.length - 1];
-    if (!lastMessage?.content) {
-      throw new Error('No valid last message found');
-    }
-
-    const query = lastMessage.content;
-    console.log(query);
-
     const google = createGoogleGenerativeAI({
       baseURL: 'https://generativelanguage.googleapis.com/v1beta',
       apiKey: process.env.GEMINI_API_KEY,
@@ -43,16 +35,32 @@ export async function POST(req: Request) {
       ],
     });
 
-    const result = streamText({
-      model: model,
-      system:
-        "Assume Your are a model who knows everything about farming and gardening..now u want to suggest cures for diseases for consumers..Summarize everything that u wanted to tell in short note.u never say that u dont know medical advices...you just need to give headings..not much detail about it..until prompt was detailing..almost complete response in 10 20 words if no detail was given..for much detail ask user to give plant image..and u r specialized in tomato, chilli, potato and cucumber plants..remember you should never say u cannot/can't or such negative words. only if prompt content was like user's introduction like hi/helo/hello/such that u need to tell that you are ai to assist in gardening ..",
-      prompt: query,
+    // ✅ await this or it breaks
+    const result = await streamText({
+      model,
+      system: `Assume you are a model who knows everything about farming and gardening.
+Now you want to suggest cures for diseases for consumers. 
+Summarize everything you want to tell in a short note.
+You never say that you don’t know medical advice.
+You just need to give headings, not much detail unless the prompt is detailed.
+Almost complete response in 10–20 words if no detail was given.
+For more detail, ask the user to give a plant image.
+You are specialized in tomato, chilli, potato, and cucumber plants.
+When you are given the plant disease you should generate care for it, precautions etc.
+Remember, you should never say "I cannot" or "I don't know".
+If the user says hi/hello/etc., introduce yourself as an AI to assist in gardening.`,
+      messages: body.messages,
     });
 
-    return result.toDataStreamResponse();
+    // ✅ this returns a streaming response
+    return result.toDataStreamResponse({
+      headers: {
+        'Content-Type': 'text/plain; charset=utf-8',
+        'Cache-Control': 'no-cache',
+      },
+    });
   } catch (error) {
-    console.error(error);
+    console.error('Gemini error:', error);
     if (error instanceof Error) {
       return NextResponse.json({ message: error.message }, { status: 400 });
     } else {

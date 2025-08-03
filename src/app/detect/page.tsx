@@ -17,8 +17,19 @@ export default function Page() {
   const [isAnalyzing, setIsAnalyzing] = useState(false);
   const [input, setInput] = useState('');
   const [contextSet, setContextSet] = useState(false);
+  const [selectedPlant, setSelectedPlant] = useState<string | null>(null);
 
-  const { messages, isLoading, append } = useChat({ api: '/api/chat' });
+  const { messages, isLoading, append, reload } = useChat({
+    api: '/api/chat',
+    initialMessages: [],
+    body: {
+      stream: true,
+    },
+    onFinish: () => {
+      // Optionally scroll to bottom or any custom behavior after response
+      scrollToBottom();
+    },
+  });
 
   const scrollToBottom = () => {
     messagesEndRef.current?.scrollIntoView({ behavior: 'smooth' });
@@ -46,9 +57,10 @@ export default function Page() {
     try {
       const formData = new FormData();
       formData.append('file', globalImage);
-      formData.append('plantName', 'test');
+      formData.append('plantName', selectedPlant || 'unknown');
 
       const res = await fetch(
+        // 'http://0.0.0.0:8000/predict/plant_classifier',
         'http://134.209.149.188:8000/predict/plant_classifier',
         {
           method: 'POST',
@@ -59,13 +71,27 @@ export default function Page() {
       if (!res.ok) throw new Error('Failed to classify plant');
 
       const result = await res.json();
-      const contextMsg = `Plant classification result:\nPlant: ${result.prediction}\nDisease: ${result.predictedDisease}`;
+      console.log('result:', result);
+      const contextMsg = `Plant & disease detection phase:\nPlant: ${
+        result.plantName
+      }\n ${
+        result.predictedDisease.toLowerCase().includes('healthy')
+          ? ''
+          : 'Disease'
+      }: ${result.predictedDisease}`;
       setDiseaseContext(contextMsg);
 
       await append({
         id: nanoid(),
         role: 'system',
         content: contextMsg,
+      });
+
+      // Add user prompt automatically to trigger response
+      await append({
+        id: nanoid(),
+        role: 'user',
+        content: 'What are the remedies or treatment options for this disease?',
       });
 
       setContextSet(true);
@@ -122,6 +148,7 @@ export default function Page() {
                   setImagePreview(null);
                   setDiseaseContext(null);
                   setContextSet(false);
+                  setSelectedPlant(null);
                 }}
                 className="absolute -top-2 -right-2 bg-red-500 text-white rounded-full w-6 h-6 flex items-center justify-center text-xs"
               >
@@ -136,6 +163,25 @@ export default function Page() {
             </>
           )}
         </div>
+
+        {imagePreview && (
+          <div className="mt-2 flex gap-2 flex-wrap justify-center">
+            {['tomato', 'chilli', 'potato', 'cucumber'].map((plant) => (
+              <button
+                key={plant}
+                type="button"
+                onClick={() => setSelectedPlant(plant)}
+                className={`px-3 py-[0.5px] text-sm rounded-full border transition-all font-medium ${
+                  selectedPlant === plant
+                    ? 'bg-green-700 text-white'
+                    : 'bg-white text-black'
+                }`}
+              >
+                {plant}
+              </button>
+            ))}
+          </div>
+        )}
 
         <input
           type="text"
@@ -168,7 +214,7 @@ export default function Page() {
             }`}
             disabled={isLoading || isAnalyzing}
           >
-            Chat <FaSearch size={20} />
+            Ask <FaSearch size={20} />
           </button>
         )}
 
