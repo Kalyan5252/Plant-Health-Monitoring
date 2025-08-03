@@ -8,8 +8,8 @@ export async function POST(req: Request) {
       context: string;
       query: string;
     };
-    console.log('context:', context);
-    console.log('query:', query);
+    // console.log('context:', context);
+    // console.log('query:', query);
     const model = 'llama3.2:3b';
     const prompt = `Context:\n${context}\n\nQuery:\n${query}`;
     const response = await queryOllama(model, prompt);
