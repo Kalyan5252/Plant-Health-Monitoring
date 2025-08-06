@@ -1,5 +1,5 @@
 # Plant Health Monitoring System - Technical Analysis
-
+APPLICATION LIVE URL: https://plant-health-monitoring.vercel.app/
 Project Overview
 
 Plant Health Monitoring System is a comprehensive AI-powered web application designed to identify plant diseases, provide treatment recommendations, and offer gardening assistance. The system combines computer vision for plant disease detection with conversational AI for personalized care guidance.
